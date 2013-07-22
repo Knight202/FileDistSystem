@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pd:ProcessDefinition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns="http://www.tibco.com/namespaces/tnt/plugins/file" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:pd="http://xmlns.tibco.com/bw/process/2003">
+    <pd:name>Starter/DataFeed.process</pd:name>
+    <pd:startName>File Poller</pd:startName>
+    <pd:startX>0</pd:startX>
+    <pd:startY>0</pd:startY>
+    <pd:returnBindings/>
+    <pd:starter name="File Poller">
+        <pd:type>com.tibco.plugin.file.FileEventSource</pd:type>
+        <pd:resourceType>ae.activities.FileEventSourceResource</pd:resourceType>
+        <pd:x>35</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <pollInterval>1</pollInterval>
+            <createEvent>true</createEvent>
+            <modifyEvent>true</modifyEvent>
+            <deleteEvent>true</deleteEvent>
+            <mode>files-and-directories</mode>
+            <encoding>text</encoding>
+            <sortby>File Name</sortby>
+            <sortorder>descending</sortorder>
+            <fileName>C:\Users\Kalpan Bhatt\CDH\TIBCO_WORKSPACE\BW\TagFeed.txt</fileName>
+            <includeCurrent>true</includeCurrent>
+            <excludeContent>false</excludeContent>
+            <encodingUsed>ASCII</encodingUsed>
+        </config>
+        <pd:inputBindings/>
+    </pd:starter>
+    <pd:endName>End</pd:endName>
+    <pd:endX>281</pd:endX>
+    <pd:endY>191</pd:endY>
+    <pd:errorSchemas/>
+    <pd:processVariables>
+        <Variable0>
+            <xsd:element name="root">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="CombinedTags" type="xsd:string"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </Variable0>
+    </pd:processVariables>
+    <pd:targetNamespace>http://xmlns.example.com/1353087612852</pd:targetNamespace>
+    <pd:activity name="Assign">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>360</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <variableName>Variable0</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <CombinedTags>
+                    <xsl:value-of select="$Map-Data/FileTree/CombinedTags"/>
+                </CombinedTags>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Assign-1">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>594</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <variableName>Variable0</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <CombinedTags>
+                    <xsl:value-of select="concat(substring-before($Map-Data/FileTree/CombinedTags, $LAYER01/FileTree/ParentFolder),substring-after($Map-Data/FileTree/CombinedTags, $LAYER01/FileTree/ParentFolder))"/>
+                </CombinedTags>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Assign-1-1">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>832</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <variableName>Variable0</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <CombinedTags>
+                    <xsl:value-of select="concat(substring-before($Variable0/root/CombinedTags, upper-case($Map-Data-1/FileTree/LAYER02)),substring-after($Variable0/root/CombinedTags, upper-case($Map-Data-1/FileTree/LAYER02)))"/>
+                </CombinedTags>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Assign-2">
+        <pd:type>com.tibco.pe.core.AssignActivity</pd:type>
+        <pd:resourceType>ae.activities.assignActivity</pd:resourceType>
+        <pd:x>961</pd:x>
+        <pd:y>191</pd:y>
+        <config>
+            <variableName>Variable0</variableName>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <CombinedTags>
+                    <xsl:value-of select="if (contains($Variable0/root/CombinedTags,&quot;NETWORKSYSTEM&quot;))&#xA;then (concat(substring-before($Variable0/root/CombinedTags, &quot;NETWORKSYSTEM&quot;), substring-after($Variable0/root/CombinedTags,&quot;NETWORKSYSTEM&quot;)))&#xA;else (concat(substring-before($Variable0/root/CombinedTags, &quot;JAVA AND DIST. COMPUTING&quot;), substring-after($Variable0/root/CombinedTags,&quot;JAVA AND DIST. COMPUTING&quot;)))"/>
+                </CombinedTags>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LAYER01">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>478</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <element>
+                <xsd:element name="FileTree">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="ParentFolder" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <FileTree>
+                <xsl:choose>
+                    <xsl:when test="contains($Map-Data/FileTree/CombinedTags,&quot;STUDY&quot;)">
+                        <ParentFolder>
+                            <xsl:value-of select="&quot;STUDY&quot;"/>
+                        </ParentFolder>
+                    </xsl:when>
+                    <xsl:when test="contains($Map-Data/FileTree/CombinedTags,&quot;MOVIES&quot;)">
+                        <ParentFolder>
+                            <xsl:value-of select="&quot;MOVIES&quot;"/>
+                        </ParentFolder>
+                    </xsl:when>
+                    <xsl:when test="contains($Map-Data/FileTree/CombinedTags,&quot;MUSIC&quot;)">
+                        <ParentFolder>
+                            <xsl:value-of select="&quot;MUSIC&quot;"/>
+                        </ParentFolder>
+                    </xsl:when>
+                    <xsl:when test="contains($Map-Data/FileTree/CombinedTags,&quot;SETUP&quot;)">
+                        <ParentFolder>
+                            <xsl:value-of select="&quot;SETUP&quot;"/>
+                        </ParentFolder>
+                    </xsl:when>
+                    <xsl:when test="contains($Map-Data/FileTree/CombinedTags,&quot;DOCS&quot;)">
+                        <ParentFolder>
+                            <xsl:value-of select="&quot;DOCUMENTS&quot;"/>
+                        </ParentFolder>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <ParentFolder>
+                            <xsl:value-of select="&quot;TEMP&quot;"/>
+                        </ParentFolder>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </FileTree>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="LAYER01-1">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>821</pd:x>
+        <pd:y>191</pd:y>
+        <config>
+            <element>
+                <xsd:element name="FileTree">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="LAYER04" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <FileTree>
+                <LAYER04>
+                    <xsl:value-of select="$Variable0/root/CombinedTags"/>
+                </LAYER04>
+            </FileTree>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map Data">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>254</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <element>
+                <xsd:element name="FileTree">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="Rename" type="xsd:string"/>
+                            <xsd:element name="CombinedTags" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <FileTree>
+                <Rename>
+                    <xsl:value-of select="substring-after($Parse-Data/Output/Rows/FileTree[1]/Rename, &quot;-&quot;)"/>
+                </Rename>
+                <CombinedTags>
+                    <xsl:value-of select="upper-case(concat($Parse-Data/Output/Rows/FileTree[1]/ParentFolder,$Parse-Data/Output/Rows/FileTree[1]/SubFloder1,$Parse-Data/Output/Rows/FileTree[1]/SubFloder2,$Parse-Data/Output/Rows/FileTree[1]/SubFloder3))"/>
+                </CombinedTags>
+            </FileTree>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map-Data-1">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>701</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <element>
+                <xsd:element name="FileTree">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="LAYER02" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <FileTree>
+                <xsl:choose>
+                    <xsl:when test="contains($Variable0/root/CombinedTags,&quot;HARVARD&quot;)">
+                        <LAYER02>
+                            <xsl:value-of select="&quot;Harvard&quot;"/>
+                        </LAYER02>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <LAYER02>
+                            <xsl:value-of select="&quot;Temp&quot;"/>
+                        </LAYER02>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </FileTree>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Map-Data-1-1">
+        <pd:type>com.tibco.plugin.mapper.MapperActivity</pd:type>
+        <pd:resourceType>ae.activities.MapperActivity</pd:resourceType>
+        <pd:x>957</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <element>
+                <xsd:element name="FileTree">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="LAYER03" type="xsd:string"/>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </element>
+        </config>
+        <pd:inputBindings>
+            <FileTree>
+                <xsl:choose>
+                    <xsl:when test="contains($Variable0/root/CombinedTags,&quot;NETWORKSYSTEM&quot;)">
+                        <LAYER03>
+                            <xsl:value-of select="&quot;Network System&quot;"/>
+                        </LAYER03>
+                    </xsl:when>
+                    <xsl:when test="contains($Variable0/root/CombinedTags,&quot;JAVA AND DIST. COMPUTING&quot;)">
+                        <LAYER03>
+                            <xsl:value-of select="&quot;Java Dist Computing&quot;"/>
+                        </LAYER03>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <LAYER03>
+                            <xsl:value-of select="&quot;Temp&quot;"/>
+                        </LAYER03>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </FileTree>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Notify">
+        <pd:type>com.tibco.plugin.waitnotify.NotifyActivity</pd:type>
+        <pd:resourceType>ae.activities.notifyActivity</pd:resourceType>
+        <pd:x>405</pd:x>
+        <pd:y>191</pd:y>
+        <config>
+            <sharedConfig>/Resources/Notify Configuration.sharednotify</sharedConfig>
+        </config>
+        <pd:inputBindings>
+            <input>
+                <key>
+                    <xsl:value-of select="&quot;Done&quot;"/>
+                </key>
+            </input>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="Parse Data">
+        <pd:type>com.tibco.plugin.parse.ParseActivity</pd:type>
+        <pd:resourceType>ae.activities.ParseActivity</pd:resourceType>
+        <pd:x>153</pd:x>
+        <pd:y>35</pd:y>
+        <config>
+            <InputType>String</InputType>
+            <Encoding>ASCII</Encoding>
+            <ParseSharedConfig>/Resources/Data Format.sharedparse</ParseSharedConfig>
+            <SkipBlankLines>true</SkipBlankLines>
+            <StrictValidation>true</StrictValidation>
+        </config>
+        <pd:inputBindings>
+            <Input>
+                <text>
+                    <xsl:value-of select="$File-Poller/ns:EventSourceOuputTextClass/fileContent/textContent"/>
+                </text>
+                <noOfRecords>
+                    <xsl:value-of select="-1"/>
+                </noOfRecords>
+            </Input>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:activity name="SetVariable">
+        <pd:type>com.tibco.pe.core.SetSharedVariableActivity</pd:type>
+        <pd:resourceType>ae.activities.setSharedVariable</pd:resourceType>
+        <pd:x>598</pd:x>
+        <pd:y>191</pd:y>
+        <config>
+            <variableConfig>/Resources/Shared Variable.sharedvariable</variableConfig>
+            <showResult>true</showResult>
+        </config>
+        <pd:inputBindings>
+            <root>
+                <FolderName>
+                    <xsl:value-of select="concat(&quot;\&quot;,$LAYER01/FileTree/ParentFolder,&quot;\&quot;, $Map-Data-1/FileTree/LAYER02,&quot;\&quot;,$Map-Data-1-1/FileTree/LAYER03,&quot;\&quot;,$LAYER01-1/FileTree/LAYER04,&quot;\&quot;)"/>
+                </FolderName>
+                <FileName>
+                    <xsl:value-of select="$Map-Data/FileTree/Rename"/>
+                </FileName>
+            </root>
+        </pd:inputBindings>
+    </pd:activity>
+    <pd:transition>
+        <pd:from>File Poller</pd:from>
+        <pd:to>Parse Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Parse Data</pd:from>
+        <pd:to>Map Data</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map Data</pd:from>
+        <pd:to>Assign</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>SetVariable</pd:from>
+        <pd:to>Notify</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Notify</pd:from>
+        <pd:to>End</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LAYER01</pd:from>
+        <pd:to>Assign-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Assign</pd:from>
+        <pd:to>LAYER01</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Assign-1</pd:from>
+        <pd:to>Map-Data-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map-Data-1</pd:from>
+        <pd:to>Assign-1-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Assign-1-1</pd:from>
+        <pd:to>Map-Data-1-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Map-Data-1-1</pd:from>
+        <pd:to>Assign-2</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>Assign-2</pd:from>
+        <pd:to>LAYER01-1</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+    <pd:transition>
+        <pd:from>LAYER01-1</pd:from>
+        <pd:to>SetVariable</pd:to>
+        <pd:lineType>Default</pd:lineType>
+        <pd:lineColor>-16777216</pd:lineColor>
+        <pd:conditionType>always</pd:conditionType>
+    </pd:transition>
+</pd:ProcessDefinition>
